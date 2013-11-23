@@ -1,0 +1,22 @@
+Jan
+    Plugins/Web.hs
+Johannes
+    Plugins/Web/*
+Marcel
+    Plugins/ImgViewer.hs
+    WLG.hs
+Sven
+    Plugins/Sdl.hs
+    Messages.hs
+    CmdArgs.hs
+    Error.hs
+    Graph.hs
+    Parser.hs
+    Types.hs
+    Core.hs
+    Renderer.hs
+    HeuRika.hs
+    PdfGraph.hs
+    ActorActor.hs
+    StaticFiles.hs
+    Plugins/GtkViewer.hs

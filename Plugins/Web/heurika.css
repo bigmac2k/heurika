@@ -1,0 +1,375 @@
+/*Greyscreen*/
+.greyscreen {
+	width: 100%;
+	height: 100%;
+	background-color: #BBBBBB;
+	opacity: 0.9;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	display: none;
+	z-index: 0;
+}
+
+.greyscreen .container {
+	width: 70%;
+	height: 150px;
+	padding: 1em;
+	margin: 3em auto auto auto;
+	z-index: 0;
+}
+
+.greyscreen .container h1.message-headline {
+	font-size: 1.5em;
+	text-align: center;
+	font-weight: 800;
+	margin: 0 0 10px 0;
+}
+
+.greyscreen .container div.message-body {
+	line-height: 1em;
+	text-align: center;
+}
+
+.errormessage {
+	background-color: #9E3409;
+}
+
+.message {
+	background-color: #ABABAB;
+	color: #1E4153;
+}
+
+body {
+	background-color: #1E4153;
+	color: #ABABAB;
+	font-family: Tahoma, sans-serif;
+	margin: 0px;
+	padding: 0px;
+	/*height: 100%;*/
+	min-height: 480px;
+}
+
+a {
+	color: #ABABAB;
+}
+
+.header h1 {
+	text-align: center;
+	display: none;
+}
+
+a:active, a:visited, a:hover, a:focus {
+
+}
+
+footer {
+	text-align: center;
+}
+
+.status, .messages, .images {
+	background-color: #128229;
+	width: 50%;
+	padding: 10px;
+	margin: 20px 0 20px 20px;
+}
+
+.content {
+	width: 100%;
+	text-align: center;
+	height: 100%;
+}
+
+.slide {
+	width: 100%;
+	height: auto;
+	z-index: 99;
+}
+
+.slide img {
+	/*position: absolute;
+	 top: 0.5%;
+	 left: 0.6%;*/
+	max-height: 99%;
+	max-width: 99%;
+	width: auto;
+	height: auto;
+	z-index: 0;
+}
+
+.listener, .speaker {
+	/*	width: 100%;*/
+}
+
+.listener {
+	/*	height: 100%;*/
+}
+
+.speaker {
+	/*	height: 90%;*/
+}
+
+.footer {
+	margin-top: -35px;
+	height: 30px;
+	position: fixed;
+	top: 100%;
+	width: 99%;
+	left: 0.5%;
+	font-size: 20px;
+	overflow: visible;
+	background-color: black;
+	opacity: 0.6;
+	border-radius: 0px;
+}
+
+.footer .speakerLink, .footer .listenerLink {
+	display: none;
+}
+
+.footer .link {
+	height: 30px;
+	line-height: 30px;
+}
+
+.footer .link a {
+	text-decoration: none;
+}
+
+.commands div, .commands {
+	border: 0px solid black;
+}
+.commands {
+	margin-top: -210px;
+	position: fixed;
+	top: 100%;
+	width: 99%;
+	left: 0.5%;
+	display: none;
+}
+
+.commands .colleft, .commands .colright {
+	width: 30.0%;
+}
+
+.commands .colmiddle {
+	width: 40%;
+}
+
+.commands .col {
+	float: left;
+}
+
+.commands .colleft .command {
+	margin: 6px 3px 6px 0px;
+}
+
+.commands .colmiddle .command {
+	margin: 6px 3px 6px 3px;
+}
+
+.commands .colright .command {
+	margin: 6px 0px 6px 3px;
+}
+
+.commands .command {
+	background-color: #BBBBBB;
+}
+
+.commands .command .active {
+	display: none;
+}
+
+.commands .command .button {
+	height: 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+/* Sizes of command buttons */
+.commands .colleft .stackback, .commands .colright .back {
+	height: 95px;
+}
+
+.commands .colleft .left, .commands .colright .right {
+	height: 65px;
+}
+
+.commands .colmiddle .up {
+	height: 50px;
+}
+
+.commands .colmiddle .down {
+	height: 110px;
+}
+
+.commands .stackback .active {
+	background-image: url('icons/set5/small/arrow_stackback_active.png');
+}
+
+.commands .back .active {
+	background-image: url('icons/set5/small/arrow_back_active.png');
+}
+
+.commands .left .active {
+	background-image: url('icons/set5/small/arrow_left_active.png');
+}
+
+.commands .right .active {
+	background-image: url('icons/set5/small/arrow_right_active.png');
+}
+
+.commands .up .active {
+	background-image: url('icons/set5/small/arrow_up_active.png');
+}
+
+.commands .down .active {
+	background-image: url('icons/set5/small/arrow_down_active.png');
+}
+
+.commands .stackback .inactive {
+	background-image: url('icons/set5/small/arrow_stackback_inactive.png');
+}
+
+.commands .back .inactive {
+	background-image: url('icons/set5/small/arrow_back_inactive.png');
+}
+
+.commands .left .inactive {
+	background-image: url('icons/set5/small/arrow_left_inactive.png');
+}
+
+.commands .right .inactive {
+	background-image: url('icons/set5/small/arrow_right_inactive.png');
+}
+
+.commands .up .inactive {
+	background-image: url('icons/set5/small/arrow_up_inactive.png');
+}
+
+.commands .down .inactive {
+	background-image: url('icons/set5/small/arrow_down_inactive.png');
+}
+
+.clearfix:after, .commands:after, .col:after {
+	content: ' ';
+	display: table;
+	height: 0;
+	clear: both;
+}
+
+html {
+	height: 100%;
+}
+
+/* Adjust commands block if we are on a device with a great height */
+@media (min-height: 900px) and (min-width: 700px) {
+	.commands {
+		margin-top: -310px;
+		position: fixed;
+		top: 100%;
+		width: 99%;
+		left: 0.5%;
+	}
+
+	.commands .colleft .stackback, .commands .colright .back {
+		height: 145px;
+	}
+
+	.commands .colleft .left, .commands .colright .right {
+		height: 95px;
+	}
+
+	.commands .colmiddle .up {
+		height: 80px;
+	}
+
+	.commands .colmiddle .down {
+		height: 160px;
+	}
+
+	.commands .stackback .active {
+		background-image: url('icons/set5/large/arrow_stackback_active.png');
+	}
+
+	.commands .back .active {
+		background-image: url('icons/set5/large/arrow_back_active.png');
+	}
+
+	.commands .left .active {
+		background-image: url('icons/set5/large/arrow_left_active.png');
+	}
+
+	.commands .right .active {
+		background-image: url('icons/set5/large/arrow_right_active.png');
+	}
+
+	.commands .up .active {
+		background-image: url('icons/set5/large/arrow_up_active.png');
+	}
+
+	.commands .down .active {
+		background-image: url('icons/set5/large/arrow_down_active.png');
+	}
+
+	.commands .stackback .inactive {
+		background-image: url('icons/set5/large/arrow_stackback_inactive.png');
+	}
+
+	.commands .back .inactive {
+		background-image: url('icons/set5/large/arrow_back_inactive.png');
+	}
+
+	.commands .left .inactive {
+		background-image: url('icons/set5/large/arrow_left_inactive.png');
+	}
+
+	.commands .right .inactive {
+		background-image: url('icons/set5/large/arrow_right_inactive.png');
+	}
+
+	.commands .up .inactive {
+		background-image: url('icons/set5/large/arrow_up_inactive.png');
+	}
+
+	.commands .down .inactive {
+		background-image: url('icons/set5/large/arrow_down_inactive.png');
+	}
+
+	.footer {
+		margin-top: -55px;
+		height: 50px;
+		position: fixed;
+		top: 100%;
+		width: 99%;
+		left: 0.5%;
+		font-size: 35px;
+		overflow: visible;
+		background-color: black;
+		opacity: 0.6;
+		border-radius: 0px;
+	}
+
+	.footer .link {
+		height: 50px;
+		line-height: 50px;
+	}
+
+}
+
+/*
+ #wrap {
+ min-height: 100%;
+ }
+
+ #main {
+ overflow: auto;
+ padding-bottom: 150px;
+ }
+
+ #footer {
+ position: relative;
+ margin-top: -150px;
+ height: 150px;
+ clear: both;
+ }*/

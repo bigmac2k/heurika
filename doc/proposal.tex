@@ -1,0 +1,72 @@
+\documentclass[a4paper,11pt,notitlepage]{scrreprt}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\subject{HeuRIKA}
+\title{Proposal for an Advanced Presentation Tool}
+\author{Johannes, Marcel, Sven}
+
+\begin{document}
+\maketitle
+
+\chapter{Motivation / Project Description}
+\label{chap:intro}
+Today, PDF-based slides are the standard for presentations in an academic setting. Lecturers and students often use LaTeX Beamer to create slides and a fullscreen capable viewer to give the presentation. However, in our experience, standard PDF viewer software, which is usually not written with presentations in mind, leaves a lot to wish for.
+
+A common setting for a lecture or exercise is as follows:
+
+\noindent The lecturers laptop is connected to a beamer and is setup such that both screens, laptop and beamer, show the same content (usually, the current slide). The lecturer advances the slides with a presenter tool or by pressing keys on the laptop. Further more, students often use their own laptops or tablet devices to view the lectures slides.
+
+We feel that this approach to presenting is suboptimal for the following reasons:
+\begin{enumerate}
+	\item Each slide has a maximum of one successor and predecessor
+	\item Available hardware is not well used
+	\item Students need to download the slides and advance them manually
+\end{enumerate}
+
+\paragraph{1.} It is often the situation that a lecturer notices that additional explaining is required. However, the linear flow of slides does not allow the lecturer to handle this situation efficiently even if (s)he had anticipated this in advance. HeuRIKA will allow the slide creator to define the slide flow as a directed graph. This way, the lecturer can use a different, more fitting path through the slides without the audience noticing it.
+
+\paragraph{2.} In the previously described common presentation scenario, both available screens (laptop and beamer) show the same content. However, since the laptop screen is only visible to the lecturer, (s)he could use it better by showing hints on the current slide or on the following one. Further more, most lecturers today possess a smartphone with a web browser, and most lecture halls provide wireless network connectivity. Just as the laptop, the smartphone could be used to show notes and also as a device to control the advancement of the slides. HeuRIKA will allow the lecturer to define one slide per screen and graph node, where the smartphone, which will use a webbrowser to show the slide, counts as one screen.
+
+\paragraph{3.} Since the students and the lecturers laptop are usually connected through a common network, HeuRIKA will optionally make the slides available via http. It will employ http long polling or similar technologies to update the currently shown slide with low latency and low communication overhead.
+
+\section{Implementation}
+Generally, HeuRIKA's design can be segmented into the following:
+\begin{itemize}
+	\item Core
+		\begin{itemize}
+			\item Parses graph description, checks validity
+			\item Keeps track of current position in graph
+			\item Renders PDF to scalable picture format (for next accessible slides, prio queue)
+			\item Keeps track of history
+			\item Sends updates to clients (new slide)
+			\item Receives slide advancement commands
+		\end{itemize}
+	\item Native client
+		\begin{itemize}
+			\item Fullscreen view of slide, allow resizing
+			\item Allow advancement of slides
+			\item Listen for slide update
+		\end{itemize}
+	\item Web client
+		\begin{itemize}
+			\item Webserver offers read only and writable (allow advancement for mobile phone, password protected) services
+		\end{itemize}
+\end{itemize}
+To abstract between these entities, we will use the actor model. Further more, one actor will have the role of a renderer, such that cached entries can be delivered to the clients while the renderer is busy. Sadly, we have not yet found a PDF library that supports true concurrent rendering and we will therefore likely use a priority queue to serve the most important requests first.
+
+\newpage
+\section{Tools and libraries}
+We plan to implement HeuRIKA in Haskell. Haskell supports green threads, various means of communication and its ecosystem includes bindings to poppler for rendering PDFs, to GTK/SDL for graphic output and WAI/WARP for handling http.
+
+\section{Initial Milestones}
+\begin{itemize}
+	\item Initial setup
+	\item Message format between actors and Message format for web application
+	\item Dummy core and Dummy web service (start client development)
+\end{itemize}
+
+\section{Qualification}
+Our team consists of three students with varying knowledge. Two of us have worked as a tutor for functional programming in the past and are eager to use Haskell in a more realistic setting. We want to use this project to evaluate Haskells support for concurrent programming. Our third member has a knowledge base in web applications for mobile devices and is keen to learn Haskell as well. Beyond that, we share the belief that HeuRIKA will be useful for presentations and addresses a real need for presentation optimized viewers.
+
+\end{document}

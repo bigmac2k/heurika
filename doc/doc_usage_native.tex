@@ -1,0 +1,151 @@
+ \section{Usage}
+ \subsection{Starting the tool}
+    To use the Heurika tool one has to follow a few steps.
+    First of all, one needs to specify a configuration file.
+    The file has to be written based on the following grammar:\\	
+	\begin{tabular}{p{3cm}l}
+	    File &= Header Sep Nodes Sep Edges Sep Screens\\\\
+	    
+	    Header &= PdfFile``\textbackslash n''NumScreens``\textbackslash n''Start``\textbackslash n''SpeakerTracks\\
+	    PdfFile &= ``PdfFile '' PDF\\
+	    NumScreens &= ``NumScreens '' Digit\\
+	    Start &= ``Start '' NodeId\\
+	    SpeakerTracks &= ``SpeakerTracks '' Digit ``\textbackslash n''\\\\
+	    
+	    Nodes &= (``Node '' NodeId Node$^+$ ``\textbackslash n'')$^+$\\
+	    
+	    Edges &= Edge ``\textbackslash n'' $|$ Edge ``\textbackslash n''Edge ``\textbackslash n''\\
+	    Edge &= Node (Dir ``$>$'' NodeId $|$ ``$<$'' Dir NodeId)$^+$ \\
+	    &$\;\;$ $|$ NodeId ``$<$lr$>$'' NodeId$^+$ $|$ NodeId ``$<$lr$>$'' NodeId ``..'' NodeId\\
+	    &$\;\;$ $|$ NodeId ``$<$ud$>$'' NodeId$^+$ $|$ NodeId ``$<$ud$>$'' NodeId ``..'' NodeId\\
+	    
+        Screen &= (``Screen'' ((String ``('' Digit``)''$)\|$(String$)^+)^+$\\\\
+	    
+        
+        Dir &= $``r'' | ``l'' | ``u'' | ``d''$\\
+        PDF &= String``.pdf''\\
+        Node &= Digit\\
+        NodeId &= Digit\\
+        Sep &= ``;\textbackslash n''\\
+        String &= $ [a-zA-Z]^+ $ \\
+        Digit &= $[1-9][0-9]^*$ \\ 
+	    
+    \end{tabular}\\
+    
+    In the header of the configuration file, one has to specify the PDF file.
+    The tool only accepts one PDF file.
+    Therefore, in case one does not only want to show the content slides but also notes, the notes need to be appended to the content slides in the PDF file.
+    Besides the PDF file, the number of screens has to be defined.
+    A probable configuration of the screens could be, one screen for the beamer, another with the notes on the local/native screen and another one for the web server.
+    
+    The start attribute determines which node will be shown on all screens during startup.
+    In case, one sets the start attribute to 1, the node with the id 1 will be shown on all screens during startup.
+    The speaker track defines, which tracks will be just available with a password on the web server.
+    Hence, the header of the configure file could be defined in the following manner:
+    \begin{verbatim}
+    PdfFile path/fp.pdf
+    NumScreens 3
+    Start 1
+    SpeakerTracks 3
+    ;
+    \end{verbatim}
+    
+    Nodes define which slide will be shown on what screen/track.
+    The first attribute of a node is an id.
+    After the id, the PDF slide has to be specified, which will be shown a track for that node id.
+    Furthermore, there need to be exactly as many tracks as screens.
+    Thus, there should be as many columns as screens are defined.
+    Counting the id as well, there are number of screens + 1 columns after the Node keyword.
+    Let us assume, we have a PDF file with 5 content slides and 5 note slides.
+    Further, we have two screens and a web server.
+    Then we would have node ids from 1 to 5.
+    The first track would show the pages 1 to 5, namely the slides and the second track would show the pages 6 to 10, namely the notes.
+    Lastly, the third track for the web server would look identical to the second track.
+    Therefore, the node part of the configure file would look like this:
+    \begin{verbatim}
+    Node 1 1 6 6
+    Node 2 2 7 7
+    Node 3 3 8 8
+    Node 4 4 9 9
+    Node 5 5 10 10
+    ;
+    \end{verbatim}
+    
+    Now, the next important part is to define how one can switch between the node ids.
+    Mostly, one will probably have a main path through the slides.
+    The main path can be most easily defined by stating with first node id, then $<$ud$>$ and the second node id.
+    After the second node id a ``..'' and the last node id of the path.
+    Thereby, one defines a start point, an interval and an end point.
+    The $<$ud$>$ means that one can go from the left node to the right by pressing down and the other way around by pressing up.
+    Besides the main path, one can have side paths with additional information.
+    One could for example go from the 3rd slide to the 5th by pressing the left arrow.
+    The side path could be defined by stating 3 l$>$ 5.
+    Further, one would be able to go forward from the 5 slide to the 4, 5 d$>$4.
+    The whole transition rules would be:
+    \begin{verbatim}
+    1 <ud> 2 .. 4
+    3 l> 5
+    5 d> 4
+    ;
+    \end{verbatim}
+    
+    Lastly, one needs to specify the screens.
+    For the depicted configuration it is most likely to have two native screens, one for the slides on the beamer and another with the nodes on the own display.
+    The first track will also be shown on the web server for the audience.
+    The last track would be on the web server.
+    Here we specified, that the port 5001 will be used for the web server with the slides on it.
+    Further, the web server with the notes will be on port 5000.
+    \begin{verbatim}
+    Screen newnative webserver(5001)
+    Screen newnative
+    Screen webserver(5000)
+    \end{verbatim}
+    
+    The whole file would then be:
+    \begin{verbatim}
+    PdfFile path/fp.pdf
+    NumScreens 3
+    Start 1
+    SpeakerTracks 1
+    ;
+    Node 1 1 6 1
+    Node 2 2 7 2
+    Node 3 3 8 3
+    Node 4 4 9 4
+    Node 5 5 10 5
+    ;
+    1 <ud> 2 .. 4
+    3 l> 5
+    5 d> 4
+    ;
+    Screen newnative webserver(5001)
+    Screen newnative
+    Screen webserver(5000)
+    \end{verbatim}
+    
+    Having defined the configuration file one can use the tool.
+    The configuration file needs to be passed to the tool as the first argument.
+    Besides the file one has to specify, in what radius the tool should pre-render the slides.
+    By passing the -s command with a number one specifies the radius.
+    Further, one can specify the password for the speaker track on the web server with -p.
+    To specify the size of the rendered image, which will be show one has to specify them with -x and -y.
+    One should enter the size of the screen with the highest resolution here.
+    The default resolution is 1024x768.
+    Besides the size, one can also change the quality of the images with -q.
+    The quality is a number between 1 and 100, to specify how good the quality of the jpeg should be compared to the PDF.
+    The default quality is 90.
+    In case one only wants to have a normal PDF viewer, one simply has to pass -presenter with the file to be presented.
+    Further, there is a --help to see all possible commands.
+    \subsection{Native viewer}
+    Now, the tool will open and based on the native screens defined windows will open.
+    To make the window fullscreen just press f and the window will fullscreen on the screen it is on.
+    In case, one has a track with slides and another one with notes, the user will have to drag the window with the slides to the beamer and leave the notes on the native display.
+    Afterwards, both can be set to fullscreen.
+    
+    Now, the slides can be controlled by the arrow keys, defined by the edges in the configure file.
+    To go back one slide, one can press press ``Escape''.
+    However, one can not only go back to the last slide, but also to the last time one left a main path.
+    Leaving a main path in this case means going either right or left.
+    One can go back to the last main path by pressing the ``right Alt'' key.
+    Further, the slides will change in both windows, when pressing the key once.
+    The tool can be closed by pressing q in any window. 

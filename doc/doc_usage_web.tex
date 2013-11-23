@@ -1,0 +1,35 @@
+\subsection{Web interface}
+Having a track for the web server, one can reach the web server via the IP of the machine HeuRIKA is running on. 
+The port as it is defined in the configuration file has to be added. 
+In the most simple case it could look like this:
+\begin{verbatim}
+http://192.168.0.102:5000
+\end{verbatim}
+
+In case, there is no public track defined, the visitor will be redirected to a password prompt.
+Type in "speaker" as the username and the password from the command line. 
+The slides will be displayed in the upper part and controls in the lower part.
+If there is a public track defined, calling the URL will show the current slide as it is defined in the configuration file.
+Below you find an explanation of the controls.
+\setlength{\tabcolsep}{10pt}
+\begin{table}[htbp]
+	\centering
+		\begin{tabular}{lcl}
+			Stackback & \includegraphics[scale=0.05]{images/arrow_stackback_active.png} & Do a jump to the begin of the current branch.\\
+			\\
+			Left & \includegraphics[scale=0.05]{images/arrow_left_active.png} & Enter the branch to the left.\\
+	\\
+			Up & \includegraphics[scale=0.05]{images/arrow_up_active.png} & Go one slide up the tree.\\
+	\\
+			Down & \includegraphics[scale=0.05]{images/arrow_down_active.png} & Go one slide down the tree.\\
+	\\
+			Back & \includegraphics[scale=0.05]{images/arrow_back_active.png} & Go one slide back.\\
+	\\
+			Right & \includegraphics[scale=0.05]{images/arrow_right_active.png} & Enter the branch to the right.\\
+		\end{tabular}
+\end{table}
+
+When there is another track defined, one can switch to this by clicking the link in the footer of the page.
+
+On the Apple iPad and iPhone there is a special opportunity to get a fullscreen display of the page: 
+By adding a link to the homescreen via the menu and clicking this link, the page is displayed in fullscreen mode.

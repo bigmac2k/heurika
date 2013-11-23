@@ -1,0 +1,462 @@
+diff -Naur poppler-0.12.2/comm poppler-0.12.2-iw/comm
+--- poppler-0.12.2-old/comm	1969-12-31 19:00:00.000000000 -0500
++++ poppler-0.12.2/comm	2012-04-23 06:13:32.933346893 -0400
+@@ -0,0 +1 @@
++/home/wavewave/.cabal/bin/gtk2hsC2hs --include=dist/build --include=/home/wavewave/usr/lib/ghc-7.0.4/array-0.3.0.2 --include=/home/wavewave/usr/lib/ghc-7.0.4/base-4.3.1.0 --include=/home/wavewave/usr/lib/ghc-7.0.4/bytestring-0.9.1.10 --include=/home/wavewave/.cabal/lib/cairo-0.12.3/ghc-7.0.4 --include=/home/wavewave/usr/lib/ghc-7.0.4/containers-0.4.0.0 --include=/home/wavewave/.cabal/lib/glib-0.12.3/ghc-7.0.4 --include=/home/wavewave/.cabal/lib/gtk-0.12.3/ghc-7.0.4 --include=/home/wavewave/usr/lib/ghc-7.0.4/haskell98-1.1.0.1 --include=/home/wavewave/usr/lib/mtl-2.0.1.0/ghc-7.0.4 --cppopts=-Idist/build/autogen --cppopts=-Idist/build --cppopts=-I. --cppopts=-I/usr/include/poppler/glib --cppopts=-I/usr/include/poppler --cppopts=-I/usr/include/glib-2.0 --cppopts=-I/usr/lib/x86_64-linux-gnu/glib-2.0/include --cppopts=-I/usr/include/cairo --cppopts=-I/usr/include/pixman-1 --cppopts=-I/usr/include/freetype2 --cppopts=-I/usr/include/libpng12 --cppopts=-I/usr/include/gtk-2.0 --cppopts=-I/usr/lib/x86_64-linux-gnu/gtk-2.0/include --cppopts=-I/usr/include/gio-unix-2.0/ --cppopts=-I/usr/include/pango-1.0 --cppopts=-I/usr/include/gdk-pixbuf-2.0 --output-dir=dist/build/Graphics/UI/Gtk/Poppler/ --output=Types.hs --precomp=dist/build/precompchs.bin glib/poppler.h ./Graphics/UI/Gtk/Poppler/Types.chs
+\ No newline at end of file
+diff -Naur poppler-0.12.2/Graphics/UI/Gtk/Poppler/Page.chs poppler-0.12.2-iw/Graphics/UI/Gtk/Poppler/Page.chs
+--- poppler-0.12.2-old/Graphics/UI/Gtk/Poppler/Page.chs	2012-08-31 19:35:41.318569393 -0400
++++ poppler-0.12.2/Graphics/UI/Gtk/Poppler/Page.chs	2012-04-23 06:32:01.793312114 -0400
+@@ -42,7 +42,7 @@
+ 
+ -- * Methods
+     pageRender,
+-    pageRenderToPixbuf,
++    -- pageRenderToPixbuf,
+     pageGetSize,
+     pageGetIndex,
+     pageGetThumbnail,
+@@ -57,7 +57,7 @@
+     pageGetFormFieldMapping,
+     pageGetSelectionRegion,
+     pageRenderSelection,
+-    pageRenderSelectionToPixbuf,
++    -- pageRenderSelectionToPixbuf,
+     ) where
+ 
+ import Control.Monad
+@@ -91,7 +91,7 @@
+ -- the upper left corner at (@srcX@, @srcY@) and @srcWidth@ and @srcHeight@. This function is for rendering
+ -- a page that will be displayed. If you want to render a page that will be printed use
+ -- 'pageRenderToPixbufForPrinting' instead
+-pageRenderToPixbuf :: PageClass page => page
++{- pageRenderToPixbuf :: PageClass page => page
+  -> Rectangle -- ^ @rect@      rectangle to render
+  -> Double -- ^ @scale@      scale specified as pixels per point         
+  -> Int -- ^ @rotation@   rotate the document by the specified degree 
+@@ -107,6 +107,7 @@
+     (realToFrac scale)
+     (fromIntegral rotation)
+     pixbuf
++-}
+ 
+ -- | Gets the size of page at the current scale and rotation.
+ pageGetSize :: PageClass page => page 
+@@ -312,12 +313,13 @@
+                   ((fromIntegral . fromEnum) style)
+                   (castPtr glyphColorPtr)
+                   (castPtr backgroundColorPtr)
+-        
++      
+ -- | Render the selection specified by selection for page into pixbuf. The selection will be rendered at
+ -- scale, using @glyphColor@ for the glyphs and @backgroundColor@ for the selection background.
+ -- 
+ -- If non-'Nothing', @oldSelection@ specifies the selection that is already rendered in pixbuf, in which case
+ -- this function will (some day) only render the changed part of the selection.
++{-
+ pageRenderSelectionToPixbuf :: PageClass page => page  
+  -> Double -- ^ @scale@            scale specified as pixels per point             
+  -> Int -- ^ @rotation@         rotate the document by the specified degree     
+@@ -343,3 +345,4 @@
+         ((fromIntegral . fromEnum) style)
+         (castPtr glyphColorPtr)
+         (castPtr backgroundColorPtr)
++-}
+\ No newline at end of file
+diff -Naur poppler-0.12.2/Graphics/UI/Gtk/Poppler/Types.chs poppler-0.12.2-iw/Graphics/UI/Gtk/Poppler/Types.chs
+--- poppler-0.12.2-old/Graphics/UI/Gtk/Poppler/Types.chs	2012-08-31 19:35:41.318569393 -0400
++++ poppler-0.12.2/Graphics/UI/Gtk/Poppler/Types.chs	2012-08-07 21:14:32.965207792 -0400
+@@ -1,4 +1,5 @@
+ {-# OPTIONS_HADDOCK hide #-}
++{-# LANGUAGE CPP #-}
+ -- -*-haskell-*-
+ -- -------------------- automatically generated file - do not edit ----------
+ --  Object hierarchy for the GIMP Toolkit (GTK) Binding for Haskell
+@@ -34,34 +35,6 @@
+ --
+ module Graphics.UI.Gtk.Poppler.Types (
+ 
+-  PangoContext(PangoContext), PangoContextClass,
+-  toPangoContext, 
+-  mkPangoContext, unPangoContext,
+-  castToPangoContext, gTypePangoContext,
+-  PangoLayoutRaw(PangoLayoutRaw), PangoLayoutRawClass,
+-  toPangoLayoutRaw, 
+-  mkPangoLayoutRaw, unPangoLayoutRaw,
+-  castToPangoLayoutRaw, gTypePangoLayoutRaw,
+-  Font(Font), FontClass,
+-  toFont, 
+-  mkFont, unFont,
+-  castToFont, gTypeFont,
+-  FontFamily(FontFamily), FontFamilyClass,
+-  toFontFamily, 
+-  mkFontFamily, unFontFamily,
+-  castToFontFamily, gTypeFontFamily,
+-  FontFace(FontFace), FontFaceClass,
+-  toFontFace, 
+-  mkFontFace, unFontFace,
+-  castToFontFace, gTypeFontFace,
+-  FontMap(FontMap), FontMapClass,
+-  toFontMap, 
+-  mkFontMap, unFontMap,
+-  castToFontMap, gTypeFontMap,
+-  FontSet(FontSet), FontSetClass,
+-  toFontSet, 
+-  mkFontSet, unFontSet,
+-  castToFontSet, gTypeFontSet,
+   Document(Document), DocumentClass,
+   toDocument, 
+   mkDocument, unDocument,
+@@ -97,7 +70,11 @@
+   ) where
+ 
+ import Foreign.ForeignPtr (ForeignPtr, castForeignPtr, unsafeForeignPtrToPtr)
++#if __GLASGOW_HASKELL__>=704
++import Foreign.C.Types    (CULong(..), CUInt(..))
++#else
+ import Foreign.C.Types    (CULong, CUInt)
++#endif
+ import System.Glib.GType	(GType, typeInstanceIsA)
+ import System.Glib.GObject
+ 
+@@ -116,167 +93,6 @@
+       | otherwise -> error $ "Cannot cast object to " ++ objTypeName
+ 
+ 
+--- *************************************************************** PangoContext
+-
+-{#pointer *PangoContext foreign newtype #} deriving (Eq,Ord)
+-
+-mkPangoContext = (PangoContext, objectUnref)
+-unPangoContext (PangoContext o) = o
+-
+-class GObjectClass o => PangoContextClass o
+-toPangoContext :: PangoContextClass o => o -> PangoContext
+-toPangoContext = unsafeCastGObject . toGObject
+-
+-instance PangoContextClass PangoContext
+-instance GObjectClass PangoContext where
+-  toGObject = GObject . castForeignPtr . unPangoContext
+-  unsafeCastGObject = PangoContext . castForeignPtr . unGObject
+-
+-castToPangoContext :: GObjectClass obj => obj -> PangoContext
+-castToPangoContext = castTo gTypePangoContext "PangoContext"
+-
+-gTypePangoContext :: GType
+-gTypePangoContext =
+-  {# call fun unsafe pango_context_get_type #}
+-
+--- ************************************************************* PangoLayoutRaw
+-
+-{#pointer *PangoLayout as PangoLayoutRaw foreign newtype #} deriving (Eq,Ord)
+-
+-mkPangoLayoutRaw = (PangoLayoutRaw, objectUnref)
+-unPangoLayoutRaw (PangoLayoutRaw o) = o
+-
+-class GObjectClass o => PangoLayoutRawClass o
+-toPangoLayoutRaw :: PangoLayoutRawClass o => o -> PangoLayoutRaw
+-toPangoLayoutRaw = unsafeCastGObject . toGObject
+-
+-instance PangoLayoutRawClass PangoLayoutRaw
+-instance GObjectClass PangoLayoutRaw where
+-  toGObject = GObject . castForeignPtr . unPangoLayoutRaw
+-  unsafeCastGObject = PangoLayoutRaw . castForeignPtr . unGObject
+-
+-castToPangoLayoutRaw :: GObjectClass obj => obj -> PangoLayoutRaw
+-castToPangoLayoutRaw = castTo gTypePangoLayoutRaw "PangoLayoutRaw"
+-
+-gTypePangoLayoutRaw :: GType
+-gTypePangoLayoutRaw =
+-  {# call fun unsafe pango_layout_get_type #}
+-
+--- *********************************************************************** Font
+-
+-{#pointer *PangoFont as Font foreign newtype #} deriving (Eq,Ord)
+-
+-mkFont = (Font, objectUnref)
+-unFont (Font o) = o
+-
+-class GObjectClass o => FontClass o
+-toFont :: FontClass o => o -> Font
+-toFont = unsafeCastGObject . toGObject
+-
+-instance FontClass Font
+-instance GObjectClass Font where
+-  toGObject = GObject . castForeignPtr . unFont
+-  unsafeCastGObject = Font . castForeignPtr . unGObject
+-
+-castToFont :: GObjectClass obj => obj -> Font
+-castToFont = castTo gTypeFont "Font"
+-
+-gTypeFont :: GType
+-gTypeFont =
+-  {# call fun unsafe pango_font_get_type #}
+-
+--- ***************************************************************** FontFamily
+-
+-{#pointer *PangoFontFamily as FontFamily foreign newtype #} deriving (Eq,Ord)
+-
+-mkFontFamily = (FontFamily, objectUnref)
+-unFontFamily (FontFamily o) = o
+-
+-class GObjectClass o => FontFamilyClass o
+-toFontFamily :: FontFamilyClass o => o -> FontFamily
+-toFontFamily = unsafeCastGObject . toGObject
+-
+-instance FontFamilyClass FontFamily
+-instance GObjectClass FontFamily where
+-  toGObject = GObject . castForeignPtr . unFontFamily
+-  unsafeCastGObject = FontFamily . castForeignPtr . unGObject
+-
+-castToFontFamily :: GObjectClass obj => obj -> FontFamily
+-castToFontFamily = castTo gTypeFontFamily "FontFamily"
+-
+-gTypeFontFamily :: GType
+-gTypeFontFamily =
+-  {# call fun unsafe pango_font_family_get_type #}
+-
+--- ******************************************************************* FontFace
+-
+-{#pointer *PangoFontFace as FontFace foreign newtype #} deriving (Eq,Ord)
+-
+-mkFontFace = (FontFace, objectUnref)
+-unFontFace (FontFace o) = o
+-
+-class GObjectClass o => FontFaceClass o
+-toFontFace :: FontFaceClass o => o -> FontFace
+-toFontFace = unsafeCastGObject . toGObject
+-
+-instance FontFaceClass FontFace
+-instance GObjectClass FontFace where
+-  toGObject = GObject . castForeignPtr . unFontFace
+-  unsafeCastGObject = FontFace . castForeignPtr . unGObject
+-
+-castToFontFace :: GObjectClass obj => obj -> FontFace
+-castToFontFace = castTo gTypeFontFace "FontFace"
+-
+-gTypeFontFace :: GType
+-gTypeFontFace =
+-  {# call fun unsafe pango_font_face_get_type #}
+-
+--- ******************************************************************** FontMap
+-
+-{#pointer *PangoFontMap as FontMap foreign newtype #} deriving (Eq,Ord)
+-
+-mkFontMap = (FontMap, objectUnref)
+-unFontMap (FontMap o) = o
+-
+-class GObjectClass o => FontMapClass o
+-toFontMap :: FontMapClass o => o -> FontMap
+-toFontMap = unsafeCastGObject . toGObject
+-
+-instance FontMapClass FontMap
+-instance GObjectClass FontMap where
+-  toGObject = GObject . castForeignPtr . unFontMap
+-  unsafeCastGObject = FontMap . castForeignPtr . unGObject
+-
+-castToFontMap :: GObjectClass obj => obj -> FontMap
+-castToFontMap = castTo gTypeFontMap "FontMap"
+-
+-gTypeFontMap :: GType
+-gTypeFontMap =
+-  {# call fun unsafe pango_font_face_get_type #}
+-
+--- ******************************************************************** FontSet
+-
+-{#pointer *PangoFontset as FontSet foreign newtype #} deriving (Eq,Ord)
+-
+-mkFontSet = (FontSet, objectUnref)
+-unFontSet (FontSet o) = o
+-
+-class GObjectClass o => FontSetClass o
+-toFontSet :: FontSetClass o => o -> FontSet
+-toFontSet = unsafeCastGObject . toGObject
+-
+-instance FontSetClass FontSet
+-instance GObjectClass FontSet where
+-  toGObject = GObject . castForeignPtr . unFontSet
+-  unsafeCastGObject = FontSet . castForeignPtr . unGObject
+-
+-castToFontSet :: GObjectClass obj => obj -> FontSet
+-castToFontSet = castTo gTypeFontSet "FontSet"
+-
+-gTypeFontSet :: GType
+-gTypeFontSet =
+-  {# call fun unsafe pango_fontset_get_type #}
+-
+ -- ******************************************************************* Document
+ 
+ {#pointer *Document foreign newtype #} deriving (Eq,Ord)
+diff -Naur poppler-0.12.2/hierarchy.list poppler-0.12.2-iw/hierarchy.list
+--- poppler-0.12.2-old/hierarchy.list	2012-08-31 19:35:41.314569393 -0400
++++ poppler-0.12.2/hierarchy.list	2012-04-23 06:20:42.401333421 -0400
+@@ -221,13 +221,13 @@
+ ## This now became a GObject in version 2:
+ 	GdkGC				as GC, gdk_gc_get_type
+ ## These are Pango structures
+-	PangoContext		as PangoContext, pango_context_get_type if pango
+-	PangoLayout		as PangoLayoutRaw, pango_layout_get_type if pango
+-	PangoFont		as Font, pango_font_get_type if pango
+-	PangoFontFamily		as FontFamily, pango_font_family_get_type if pango
+-	PangoFontFace		as FontFace, pango_font_face_get_type if pango
+-	PangoFontMap		as FontMap, pango_font_face_get_type if pango
+-	PangoFontset		as FontSet, pango_fontset_get_type if pango
++#	PangoContext		as PangoContext, pango_context_get_type if pango
++#	PangoLayout		as PangoLayoutRaw, pango_layout_get_type if pango
++#	PangoFont		as Font, pango_font_get_type if pango
++#	PangoFontFamily		as FontFamily, pango_font_family_get_type if pango
++#	PangoFontFace		as FontFace, pango_font_face_get_type if pango
++#	PangoFontMap		as FontMap, pango_font_face_get_type if pango
++#	PangoFontset		as FontSet, pango_fontset_get_type if pango
+ ## This type is only available for PANGO_ENABLE_BACKEND compiled source
+ ##	    PangoFontsetSimple	as FontSetSimple, pango_fontset_simple_get_type
+ 
+diff -Naur poppler-0.12.2/poppler.cabal poppler-0.12.2-iw/poppler.cabal
+--- poppler-0.12.2-old/poppler.cabal	2012-08-31 19:35:41.314569393 -0400
++++ poppler-0.12.2/poppler.cabal	2012-08-07 21:15:21.157206281 -0400
+@@ -37,11 +37,12 @@
+   location:     http://patch-tag.com/r/AndyStewart/poppler
+ 
+ Library
+-        build-depends:  base >= 4 && < 5, array, containers, haskell98, mtl, bytestring,
++        build-depends:  base >= 4 && < 5, array, containers, 
++                        mtl, bytestring,
+                         glib >= 0.12 && < 0.13,
+                         cairo >= 0.12 && < 0.13,
+                         gtk >= 0.12 && < 0.13
+-						
++--						haskell98, 
+         build-tools:    gtk2hsC2hs, gtk2hsHookGenerator, gtk2hsTypeGen
+ 						
+         exposed-modules:
+diff -Naur poppler-0.12.2/test.log poppler-0.12.2-iw/test.log
+--- poppler-0.12.2-old/test.log	1969-12-31 19:00:00.000000000 -0500
++++ poppler-0.12.2/test.log	2012-04-23 06:07:20.625358568 -0400
+@@ -0,0 +1,127 @@
++Reading available packages...
++Configuring poppler-0.12.2...
++Dependency array ==0.3.0.2: using array-0.3.0.2
++Dependency base ==4.3.1.0: using base-4.3.1.0
++Dependency bytestring ==0.9.1.10: using bytestring-0.9.1.10
++Dependency cairo ==0.12.3: using cairo-0.12.3
++Dependency containers ==0.4.0.0: using containers-0.4.0.0
++Dependency glib ==0.12.3: using glib-0.12.3
++Dependency gtk ==0.12.3: using gtk-0.12.3
++Dependency haskell98 ==1.1.0.1: using haskell98-1.1.0.1
++Dependency mtl ==2.0.1.0: using mtl-2.0.1.0
++Dependency poppler-glib >=0.12.4: using version 0.18.4
++Dependency gobject-2.0 -any: using version 2.31.22
++Dependency glib-2.0 -any: using version 2.31.22
++Dependency cairo >=1.2.0: using version 1.10.2
++Dependency gdk-2.0 -any: using version 2.24.10
++Dependency gdk-pixbuf-2.0 -any: using version 2.26.0
++Dependency pango -any: using version 1.29.5
++Using Cabal-1.10.2.0 compiled by ghc-7.0
++Using compiler: ghc-7.0.4
++Using install prefix: /home/wavewave/.cabal
++Binaries installed in: /home/wavewave/.cabal/bin
++Libraries installed in: /home/wavewave/.cabal/lib/poppler-0.12.2/ghc-7.0.4
++Private binaries installed in: /home/wavewave/.cabal/libexec
++Data files installed in: /home/wavewave/.cabal/share/poppler-0.12.2
++Documentation installed in: /home/wavewave/.cabal/share/doc/poppler-0.12.2
++Using alex version 2.3.5 found on system at: /home/wavewave/usr/bin/alex
++Using ar found on system at: /usr/bin/ar
++Using c2hs version 0.16.3 found on system at: /home/wavewave/.cabal/bin/c2hs
++No cpphs found
++No ffihugs found
++Using gcc version 4.6 found on system at: /usr/bin/gcc
++Using ghc version 7.0.4 found on system at: /home/wavewave/usr/bin/ghc
++Using ghc-pkg version 7.0.4 found on system at: /home/wavewave/usr/bin/ghc-pkg
++No greencard found
++Using gtk2hsC2hs found on system at: /home/wavewave/.cabal/bin/gtk2hsC2hs
++Using gtk2hsHookGenerator found on system at:
++/home/wavewave/.cabal/bin/gtk2hsHookGenerator
++Using gtk2hsTypeGen found on system at:
++/home/wavewave/.cabal/bin/gtk2hsTypeGen
++Using haddock version 2.9.2 found on system at: /home/wavewave/usr/bin/haddock
++Using happy version 1.18.6 found on system at: /home/wavewave/usr/bin/happy
++No hmake found
++Using hsc2hs version 0.67 found on system at: /home/wavewave/usr/bin/hsc2hs
++No hscolour found
++No hugs found
++No jhc found
++Using ld found on system at: /usr/bin/ld
++No lhc found
++No lhc-pkg found
++No nhc98 found
++Using pkg-config version 0.26 found on system at: /usr/bin/pkg-config
++Using ranlib found on system at: /usr/bin/ranlib
++Using strip found on system at: /usr/bin/strip
++Using tar found on system at: /bin/tar
++No uhc found
++/usr/bin/pkg-config --modversion poppler-glib
++/usr/bin/pkg-config --modversion gobject-2.0
++/usr/bin/pkg-config --modversion glib-2.0
++/usr/bin/pkg-config --modversion cairo
++/usr/bin/pkg-config --modversion gdk-2.0
++/usr/bin/pkg-config --modversion gdk-pixbuf-2.0
++/usr/bin/pkg-config --modversion pango
++Ensuring that class hierarchy in Graphics/UI/Gtk/Poppler/Types.chs is
++up-to-date.
++/home/wavewave/.cabal/bin/gtk2hsTypeGen --hierarchy=hierarchy.list --tag=poppler --prefix=poppler --lib=poppler --import=System.Glib.GObject --modname=Graphics.UI.Gtk.Poppler.Types --tag=popplerglib --tag=popplerglib-0.0 --tag=popplerglib-0.2 --tag=popplerglib-0.4 --tag=popplerglib-0.6 --tag=popplerglib-0.8 --tag=popplerglib-0.10 --tag=popplerglib-0.12 --tag=popplerglib-0.14 --tag=popplerglib-0.16 --tag=popplerglib-0.18 --tag=gobject --tag=gobject-2.0 --tag=gobject-2.2 --tag=gobject-2.4 --tag=gobject-2.6 --tag=gobject-2.8 --tag=gobject-2.10 --tag=gobject-2.12 --tag=gobject-2.14 --tag=gobject-2.16 --tag=gobject-2.18 --tag=gobject-2.20 --tag=gobject-2.22 --tag=gobject-2.24 --tag=gobject-2.26 --tag=gobject-2.28 --tag=gobject-2.30 --tag=glib --tag=glib-2.0 --tag=glib-2.2 --tag=glib-2.4 --tag=glib-2.6 --tag=glib-2.8 --tag=glib-2.10 --tag=glib-2.12 --tag=glib-2.14 --tag=glib-2.16 --tag=glib-2.18 --tag=glib-2.20 --tag=glib-2.22 --tag=glib-2.24 --tag=glib-2.26 --tag=glib-2.28 --tag=glib-2.30 --tag=cairo --tag=cairo-1.0 --tag=cairo-1.2 --tag=cairo-1.4 --tag=cairo-1.6 --tag=cairo-1.8 --tag=cairo-1.10 --tag=gdk --tag=gdk-2.0 --tag=gdk-2.2 --tag=gdk-2.4 --tag=gdk-2.6 --tag=gdk-2.8 --tag=gdk-2.10 --tag=gdk-2.12 --tag=gdk-2.14 --tag=gdk-2.16 --tag=gdk-2.18 --tag=gdk-2.20 --tag=gdk-2.22 --tag=gdk-2.24 --tag=gdkpixbuf --tag=gdkpixbuf-2.0 --tag=gdkpixbuf-2.2 --tag=gdkpixbuf-2.4 --tag=gdkpixbuf-2.6 --tag=gdkpixbuf-2.8 --tag=gdkpixbuf-2.10 --tag=gdkpixbuf-2.12 --tag=gdkpixbuf-2.14 --tag=gdkpixbuf-2.16 --tag=gdkpixbuf-2.18 --tag=gdkpixbuf-2.20 --tag=gdkpixbuf-2.22 --tag=gdkpixbuf-2.24 --tag=gdkpixbuf-2.26 --tag=pango --tag=pango-1.0 --tag=pango-1.2 --tag=pango-1.4 --tag=pango-1.6 --tag=pango-1.8 --tag=pango-1.10 --tag=pango-1.12 --tag=pango-1.14 --tag=pango-1.16 --tag=pango-1.18 --tag=pango-1.20 --tag=pango-1.22 --tag=pango-1.24 --tag=pango-1.26 --tag=pango-1.28
++creating dist/build
++creating dist/build/autogen
++Preprocessing library poppler-0.12.2...
++creating dist/build/Graphics/UI/Gtk/Poppler
++/home/wavewave/.cabal/bin/gtk2hsC2hs --include=dist/build --include=/home/wavewave/usr/lib/ghc-7.0.4/array-0.3.0.2 --include=/home/wavewave/usr/lib/ghc-7.0.4/base-4.3.1.0 --include=/home/wavewave/usr/lib/ghc-7.0.4/bytestring-0.9.1.10 --include=/home/wavewave/.cabal/lib/cairo-0.12.3/ghc-7.0.4 --include=/home/wavewave/usr/lib/ghc-7.0.4/containers-0.4.0.0 --include=/home/wavewave/.cabal/lib/glib-0.12.3/ghc-7.0.4 --include=/home/wavewave/.cabal/lib/gtk-0.12.3/ghc-7.0.4 --include=/home/wavewave/usr/lib/ghc-7.0.4/haskell98-1.1.0.1 --include=/home/wavewave/usr/lib/mtl-2.0.1.0/ghc-7.0.4 --cppopts=-Idist/build/autogen --cppopts=-Idist/build --cppopts=-I. --cppopts=-I/usr/include/poppler/glib --cppopts=-I/usr/include/poppler --cppopts=-I/usr/include/glib-2.0 --cppopts=-I/usr/lib/x86_64-linux-gnu/glib-2.0/include --cppopts=-I/usr/include/cairo --cppopts=-I/usr/include/pixman-1 --cppopts=-I/usr/include/freetype2 --cppopts=-I/usr/include/libpng12 --cppopts=-I/usr/include/gtk-2.0 --cppopts=-I/usr/lib/x86_64-linux-gnu/gtk-2.0/include --cppopts=-I/usr/include/gio-unix-2.0/ --cppopts=-I/usr/include/pango-1.0 --cppopts=-I/usr/include/gdk-pixbuf-2.0 --output-dir=dist/build/Graphics/UI/Gtk/Poppler/ --output=Types.hs --precomp=dist/build/precompchs.bin glib/poppler.h ./Graphics/UI/Gtk/Poppler/Types.chs
++gtk2hsC2hs: Errors during expansion of binding hooks:
++
++./Graphics/UI/Gtk/Poppler/Types.chs:125: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoContext' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:144: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_context_get_type' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:148: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoLayout' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:167: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_layout_get_type' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:171: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoFont' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:190: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_font_get_type' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:194: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoFontFamily' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:213: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_font_family_get_type' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:217: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoFontFace' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:236: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_font_face_get_type' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:240: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoFontMap' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:259: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_font_face_get_type' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:263: (column 12) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `PangoFontset' in the header file.
++./Graphics/UI/Gtk/Poppler/Types.chs:282: (column 22) [ERROR] 
++  >>> Unknown identifier!
++  Cannot find a definition for `pango_fontset_get_type' in the header file.
++
++Resolving dependencies...
++In order, the following would be installed:
++poppler-0.12.2 (new package)
++creating dist/setup
++./dist/setup/setup configure --verbose=2 --ghc --prefix=/home/wavewave/.cabal
++--user --constraint=array ==0.3.0.2 --constraint=base ==4.3.1.0
++--constraint=bytestring ==0.9.1.10 --constraint=cairo ==0.12.3
++--constraint=containers ==0.4.0.0 --constraint=glib ==0.12.3 --constraint=gtk
++==0.12.3 --constraint=haskell98 ==1.1.0.1 --constraint=mtl ==2.0.1.0
++creating dist/setup
++./dist/setup/setup build --verbose=2
