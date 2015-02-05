@@ -6,8 +6,8 @@ import qualified Types as T
 
 --import qualified Plugins.ImgViewer (client)
 import qualified Plugins.GtkViewer (client)
---import qualified Plugins.Web (client)
+import qualified Plugins.Web (client)
 
 {- This list contains all available clients -}
 linkedClients :: [T.Client]
-linkedClients = [Plugins.GtkViewer.client] --, Plugins.Web.client]
+linkedClients = [Plugins.GtkViewer.client, Plugins.Web.client]

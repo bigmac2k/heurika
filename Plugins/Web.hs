@@ -87,8 +87,8 @@ start (sprOnly, optPw) args (mToViewers, mToCore) = do
     run port $ app masterChan mToCore seqMessage sessionStore authUser authPassword authPublic port
 
 --The web application
-app :: MonadIO m => TChan DataMessage -> TChan M.MToCore -> TMVar DataMessage -> TMVar SessionStore -> String -> Maybe String -> Bool -> Int -> Request -> m Response
-app masterChan mToCore seqMessage sessionStore authUser authPassword authPublic port req = do
+app :: TChan DataMessage -> TChan M.MToCore -> TMVar DataMessage -> TMVar SessionStore -> String -> Maybe String -> Bool -> Int -> Application
+app masterChan mToCore seqMessage sessionStore authUser authPassword authPublic port req respond = do
     s <- liftIO $ atomically $ readTMVar sessionStore
     let id = (getParameter "id" req)
     let cache = (getParameter "cache" req)
@@ -96,20 +96,21 @@ app masterChan mToCore seqMessage sessionStore authUser authPassword authPublic 
     let ip = (takeWhile (/=':') (show (remoteHost req)))
     let cmd = (getParameter "cmd" req)
     let pRole = (getParameter "role" req)
-    case pathInfo req of
+    resp <- case pathInfo req of
         ["update"] -> update masterChan seqMessage id cache jsonp authPublic sessionStore (getCookieKey port req) ip
         ["command"] -> command sessionStore mToCore cmd jsonp (getCookieKey port req) ip
         ["role"] -> role sessionStore jsonp pRole (getCookieKey port req) ip authPublic authPassword
         ["speaker"] -> mainPage "speaker" sessionStore authUser authPassword authPublic port req
         [] ->  mainPage "listener" sessionStore authUser authPassword authPublic port req
         x -> return $ buildResponseFile $ intercalate "/" $ ["Plugins/Web"] ++ (map T.unpack x)
+    respond resp
 
 
 --Return error to the client, that no password and no public track is specified
 mainPage :: (MonadIO m) =>  String -> TMVar SessionStore -> String -> Maybe String -> Bool -> Int -> Request -> m Response
 mainPage "speaker" sessionStore authUser Nothing authPublic port req = do
   if authPublic then do
-    return $ ResponseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8")] $ mconcat $ map copyByteString ["No public tracks and no password specified!"]
+    return $ responseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8")] $ mconcat $ map copyByteString ["No public tracks and no password specified!"]
   else do
     mainPage "listener" sessionStore authUser Nothing authPublic port req
 
@@ -142,14 +143,14 @@ mainPage "speaker" sessionStore authUser (Just authPassword) authPublic port req
     store <- liftIO $ atomically $ readTMVar sessionStore
     if sessionExists store (getCookieKey port req) remote then do
       let s = "Digest realm=\""++ realm ++ "\", qop=\"auth\", nonce=\"" ++ nonce ++ "\", opaque=\"" ++ opaque ++ "\""
-      return $ ResponseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8"),( "WWW-Authenticate", BU.fromString s)] $ mconcat $ map copyByteString ["Not authentified!"]
+      return $ responseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8"),( "WWW-Authenticate", BU.fromString s)] $ mconcat $ map copyByteString ["Not authentified!"]
     else do
       k <- liftIO $ getNewCookie remote
       let s = "Digest realm=\""++ realm ++ "\", qop=\"auth\", nonce=\"" ++ newNonce ++ "\", opaque=\"" ++ opaque ++ "\""
       liftIO $ atomically $ do 
         e <- takeTMVar sessionStore
         putTMVar sessionStore $ addSession e k remote newNonce
-      return $ ResponseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8"),( "WWW-Authenticate", BU.fromString s), ("Set-Cookie",BC.pack("warpsession"++ show port ++"="++ (show k) ++ ";Max-Age=7200;Version=\"1\";Path=/"))] $ mconcat $ map copyByteString ["Not authentified!"]
+      return $ responseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8"),( "WWW-Authenticate", BU.fromString s), ("Set-Cookie",BC.pack("warpsession"++ show port ++"="++ (show k) ++ ";Max-Age=7200;Version=\"1\";Path=/"))] $ mconcat $ map copyByteString ["Not authentified!"]
 
 --Return the main page in listener mode to the client
 mainPage "listener" sessionStore authUser authPassword authPublic port req = do
@@ -222,14 +223,14 @@ update masterChan seqMessage id cache jsonpara authPublic sessionStore cookie re
             case current of
               x -> do  return $ resp x
   else do
-    return $ ResponseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8")] $ mconcat $ map copyByteString ["Not authentified!"]    
+    return $ responseBuilder status401 [ ("Content-Type", "text/txt; charset=utf-8")] $ mconcat $ map copyByteString ["Not authentified!"]    
     where
       resp x = buildResponse "application/json; charset=utf-8" [ jsonpara, "(", BU.fromString $ Text.JSON.encode x ,");" ]
 
 --like ResponseFile but retrieve from staticFile
 responseFileLinked :: Status -> ResponseHeaders -> FilePath -> Response
 responseFileLinked status headers fn = case Map.lookup fn staticFiles of
-                                            Nothing -> ResponseBuilder status404 [("Content-Type", "text/plain; charset=utf-8")] $ mconcat $ map copyByteString ["Error 404"]
+                                            Nothing -> responseBuilder status404 [("Content-Type", "text/plain; charset=utf-8")] $ mconcat $ map copyByteString ["Error 404"]
                                             Just bs -> responseLBS status headers (BL.fromChunks [bs])
 
 --Send the file with the response to the client
@@ -239,7 +240,7 @@ buildResponseFile file | checkTyp ".html" file = responseFileLinked status200 [ 
                        | checkTyp ".js"   file = responseFileLinked status200 [ ("Content-Type", "text/javascript; charset=utf-8")] file
                        | checkTyp ".png"   file = responseFileLinked status200 [ ("Content-Type", "image/png")] file
                        | checkTyp ".jpg"   file = responseFileLinked status200 [ ("Content-Type", "image/jpeg")] file
-                       | otherwise = ResponseBuilder status404 [("Content-Type", "text/plain; charset=utf-8")] $ mconcat $ map copyByteString ["Error 404"]
+                       | otherwise = responseBuilder status404 [("Content-Type", "text/plain; charset=utf-8")] $ mconcat $ map copyByteString ["Error 404"]
   where
     checkTyp typ filepath = ((reverse typ) == (take (length typ) $ reverse filepath))
 
@@ -247,7 +248,7 @@ buildResponseFile file | checkTyp ".html" file = responseFileLinked status200 [ 
 
 --Send a text response to the client with a specific tyype
 buildResponse:: Ascii -> [BU.ByteString] -> Response
-buildResponse typ content = ResponseBuilder status200 [("Content-Type", typ)] $ mconcat $ map copyByteString content
+buildResponse typ content = responseBuilder status200 [("Content-Type", typ)] $ mconcat $ map copyByteString content
 
 --Get a parameter value of the uri with a specific name
 getParameter :: BU.ByteString -> Request -> BU.ByteString
