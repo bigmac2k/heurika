@@ -7,8 +7,8 @@ import Control.Concurrent.STM
 import qualified Data.Array as A
 import Control.Monad.Error
 import Control.Monad
-import Data.Maybe
-import System.IO (getChar)
+import System.IO (getChar,hPutStrLn,stderr)
+import System.Exit (exitFailure)
 
 import Graphics.UI.Gtk (initGUI, mainGUI)
 
@@ -36,11 +36,15 @@ startClients speakerPw speakerTracks screenss = liftIO $ do
         let speakerOnly = i `elem` speakerTracks
         toClientChan <- atomically newTChan
         forM_ screens $ \(Screen name args) -> do
-            let client = fromJust $ lookup name linkedClients
+            client <- maybe (err name) return $ lookup name linkedClients
             clChan <- atomically $ dupTChan toClientChan
             forkIO $ client (speakerOnly, speakerPw) args (clChan, fromClientChan)
         return toClientChan
     return (toClientChans, fromClientChan)
+    where
+    err name = do
+      hPutStrLn stderr $ "could not find module " ++ name
+      exitFailure
 
 -- main entry point
 main :: IO ()
