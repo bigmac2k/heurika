@@ -25,10 +25,26 @@ start (fromCore, toCore) = do
         window `on` keyPressEvent $ tryEvent $ do
             event <- eventKeyName
             eventHandler event
+        {-
+         - -- bug here - should resize also when window size changes, not only if new image there
+         -window `on` configureEvent $ tryEvent $ do
+         -    (width, height) <- eventSize
+         -    liftIO $ containerForeach window $ \widget -> when (widget `isA` gTypeImage) $ do
+         -      let image = castToImage widget
+         -      stype <- image `get` imageStorageType
+         -      case stype of
+         -        ImagePixbuf -> do
+         -          pixbuf <- imageGetPixbuf image
+         -          width <- pixbufGetWidth pixbuf
+         -          height <- pixbufGetHeight pixbuf
+         -          print (width, height)
+         -        _ -> return ()
+         -}
         return $ \bs -> do
             (tempName, tempHandle) <- openTempFile "." "temp.jpg"
             BS.hPut tempHandle bs
-            pixbuf <- pixbufNewFromFile tempName
+            (width, height) <- windowGetSize window
+            pixbuf <- pixbufNewFromFileAtScale tempName width height True
             hClose tempHandle
             removeFile tempName
             postGUIAsync $ imageSetFromPixbuf imageView pixbuf
